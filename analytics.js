@@ -1,18 +1,47 @@
 GA = (function() {
-	var opts = {
+	var defaults = {
 			domain: 'marinemax',
+			trackOutbound: true,
 			siteSearchInput: 'q'
 		},
+		/**
+		 *	Add your custom tracking properties here
+		 *	@example
+		 *	'requestInfo': ['_trackEvent', 'Request More Information', 'link']
+		 */
 		gaEvents = {
 			'requestInfo': ['_trackEvent', 'Request More Information', 'link'],
 			'siteSearch': ['_trackEvent', 'Quick Search', 'main search'],
 			'printPage': ['_trackEvent', 'Print', 'current page'],
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
 		};
-		// paramenters = ['_trackSocial', 'twitter', 'tweet'], ['_trackEvent',  'Social share', 'twitter', 'tweet'];
 	return {
 		'version': '0.2',
-		processFactoryOptions: function(gaOptions, parameters) {
+		/**
+		 *  extend an object by merging with other objects
+		 *  if only one object is passed in then it extends the GA class
+		 *  @return {Object} the merged objects
+		 */
+		mergeObj: function () {
+			var target = arguments[0] || {},
+				i = 1,
+				length = arguments.length,
+				source;
+			if (length === i) {
+				target = this;
+				i = 0;
+			}
+			for ( ; i < length; i++) {
+				source = arguments[i];
+				if (source !== null) {
+					for (var property in source) {
+						target[property] = source[property];
+					}
+				}
+			}
+			return target;
+		},
+		processFactoryOptions: function (gaOptions, parameters) {
 			var i, z, params = parameters;
 			if (gaOptions) {
 				debug.log('gaOptions = ', gaOptions);
@@ -26,7 +55,7 @@ GA = (function() {
 			}
 			return params;
 		},
-		factory: function(gaType, gaOptions) {
+		factory: function (gaType, gaOptions) {
 			var parameters = false,
 				key, i, z, gaEvent;
 			if (gaEvents[gaType]) {
@@ -51,7 +80,7 @@ GA = (function() {
 		 *  push information to the tracking object
 		 *  @param   {Array} parameters an array of the parameters, ex. ['_trackEvent', 'Payment Calculator', 'submit']
 		 */
-		pushTrackEvent: function(parameters) {
+		pushTrackEvent: function (parameters) {
 			var key;
 			for (key in parameters) {
 				debug.log('parameters to push =', parameters[key]);
@@ -62,7 +91,7 @@ GA = (function() {
 		 *  track outbound links, tracking fires after 200 ms to make sure it is recorded properly
 		 *  @param   {DOM Node} el the link that was clicked on
 		 */
-		outboundLinks: function(el) {
+		outboundLinks: function (el) {
 			var href = el.href,
 				exitType = (!href.match(/maps.google.com/ig)) ? 'exit' : 'Google Maps Driving Directions';
 			setTimeout(function() {
@@ -70,16 +99,16 @@ GA = (function() {
 				location.href = href;
 			}, 200);
 		},
-		trackSiteSearch: function(form) {
+		trackSiteSearch: function (form) {
 			this.pushTrackEvent(this.factory('siteSearch', form[opts.siteSearchInput].value));
 			return true;
 		},
-		trackLinks: function(el) {
+		trackLinks: function (el) {
 			var analyticsInfo,
 				analyticsType = el.getAttribute('data-analytics-type') || false,
 				regexp = new RegExp('^http(s)?:\/\/([a-z]+\.)?(' + opts.domain + ')', 'ig'),
 				parameters = false;
-			if (!el.href.match(regexp)) {	// track outbound links
+			if (!el.href.match(regexp) && opts.trackOutbound) {	// track outbound links
 				this.outboundLinks(el);
 				return false;
 			} else if (analyticsType) {
@@ -95,8 +124,9 @@ GA = (function() {
 				return false;
 			}
 		},
-		init: function() {
+		init: function (options) {
 			var that = this;
+			this.opts = this.mergeObj(defaults, options);
 			/*
 				setup tracking for all links
 				the default behavior is to prevent the link's default behavior
@@ -104,10 +134,10 @@ GA = (function() {
 				but sometimes we need to follow the link so those conditions return true
 			*/
 			// _gaq.push(['_setDomainName', 'none']);
-			$('body').on('click', 'a', function(e) {
+			$('body').on('click', 'a', function (e) {
 				return that.trackLinks(this);
 			});
-			$('#searchForm').submit(function() {
+			$('#searchForm').submit(function () {
 				return that.trackSiteSearch(this);
 			});
 		}
