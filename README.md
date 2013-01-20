@@ -27,10 +27,12 @@ Here is an example of tracking a link to request more information.
 gaEvents = {
 	'requestInfo': ['_trackEvent', 'Request More Information', 'link']
 };
+```
 
 Add the data attributes to the HTML element
 ```html
 <a class="printPage" href="#" data-analytics-typ="requestInfo" data-analytics-info="Additional Information">Request More Information</a>
+```
 
 When those pieces are in place here is the information that will get pushed to the `_gaq` object:
 
