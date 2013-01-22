@@ -1,8 +1,6 @@
 Analytics Class
 ===================
 
-**Author** Michael Turnwall
-
 Description
 -------------
 This is a javascript class that makes it real easy to add custom google analytics tracking to any web site. The goal of this class is to reduce the amount of custom javascript that needs to be written for custom google analytic tracking.
@@ -10,10 +8,24 @@ This is a javascript class that makes it real easy to add custom google analytic
 Usage
 --------
 
-Include [jQuery](http://jquery.com) and the analytics.js file on your page.
+Include [jQuery](http://jquery.com) and the analytics.js file on your page. Don't forget to include the [default tracking code](https://support.google.com/analytics/bin/answer.py?hl=en&answer=1008080) from Google. If you want to see if your events are tracking correctly  replace all references to /ga.js with /u/ga_debug.js. You'll now see a bunch of analytics output in your browser's console.
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-	<script type="text/javascript" src="/path/to/analytics.js">
+```js
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="/path/to/analytics.js"></script>
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-XXXXX-Y']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+```
+
 
 ### Setup Custom Tracking
 
