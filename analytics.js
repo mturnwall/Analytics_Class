@@ -5,7 +5,8 @@ GA = (function() {
 			siteSearchInput: 'q'
 		},
 		/**
-		 *	Add your custom tracking properties here
+		 *	Add your custom tracking properties here or
+		 *	pass in as an option when calling the init method
 		 *	@example
 		 *	'requestInfo': ['_trackEvent', 'Request More Information', 'link']
 		 */
@@ -16,7 +17,7 @@ GA = (function() {
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
 		};
 	return {
-		'version': '0.2',
+		'version': '0.3',
 		/**
 		 *  extend an object by merging with other objects
 		 *  if only one object is passed in then it extends the GA class
