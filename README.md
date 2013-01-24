@@ -1,6 +1,8 @@
 Analytics Class
 ===================
 
+<a href="http://projects.turnwall.net/analytics_class/">Project Page</a> -- <a href="http://projects.turnwall.net/analytics_class/demo">Demo Page</a>
+
 Description
 -------------
 This is a javascript class that makes it real easy to add custom google analytics tracking to any web site. The goal of this class is to reduce the amount of custom javascript that needs to be written for custom google analytic tracking.
