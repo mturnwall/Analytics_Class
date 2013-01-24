@@ -1,19 +1,24 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
-
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
 body {
-  padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding:10px;
+  font:16px/1.5em Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #ececec;
   color:#777;
   font-weight:300;
 }
 
 h1, h2, h3, h4, h5, h6 {
   color:#222;
-  margin:0 0 20px;
+  margin:0 0 8px;
 }
 
 p, ul, ol, table, pre, dl {
-  margin:0 0 20px;
+  margin:0 0 10px;
 }
 
 h1, h2, h3 {
@@ -37,6 +42,9 @@ a {
   font-weight:400;
   text-decoration:none;
 }
+a:hover {
+  text-decoration: underline;
+}
 
 a small {
   font-size:11px;
@@ -48,6 +56,13 @@ a small {
 .wrapper {
   width:860px;
   margin:0 auto;
+  padding: 20px;
+  background-color: #fafafa;
+  overflow: hidden;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow:  0px 0px 5px 0px rgba(125, 125, 125, .5);
+  box-shadow:  0px 0px 5px 0px rgba(125, 125, 125, .5);
 }
 
 blockquote {
@@ -63,12 +78,25 @@ code, pre {
   font-size:12px;
 }
 
+code {
+  background-color: #ececec;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
 pre {
+  margin-bottom: 20px;
   padding:8px 15px;
-  background: #f8f8f8;  
+  background-color: #ececec;  
   border-radius:5px;
-  border:1px solid #e5e5e5;
+  border:1px solid #ccc;
   overflow-x: auto;
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
 table {
@@ -100,7 +128,12 @@ header {
   float:left;
   position:fixed;
 }
-
+p.view {
+  line-height: 20px;
+}
+p.view a:hover {
+  text-decoration: none;
+}
 header ul {
   list-style:none;
   height:40px;
@@ -137,7 +170,9 @@ header ul a {
   padding-top:6px;
   height:40px;
 }
-
+header ul a:hover {
+  text-decoration: none;
+}
 strong {
   color:#222;
   font-weight:700;
@@ -162,7 +197,7 @@ header ul a strong {
 section {
   width:500px;
   float:right;
-  padding-bottom:50px;
+  padding-bottom:30px;
 }
 
 small {

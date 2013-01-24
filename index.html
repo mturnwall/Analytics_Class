@@ -1,38 +1,91 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Analytics class by mturnwall</title>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
+<title>Analytics class by mturnwall</title>
+
+<link rel="stylesheet" href="stylesheets/styles.css">
+<link rel="stylesheet" href="stylesheets/pygment_trac.css">
+<link rel="stylesheet" href="highlighter/tomorrow.css">
+
+<script src="highlighter/prettify.js"></script>
+<script>
+    if (window.addEventListener) {
+         window.addEventListener('load', prettyPrint);
+    } else if (window.attachEvent)  {
+        window.attachEvent('load', prettyPrint);
+    }
+</script>
+
+<!--[if lt IE 9]>
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+</head>
+<body>
     <div class="wrapper">
-      <header>
-        <h1>Analytics class</h1>
-        <p></p>
+        <header>
+            <h1>Analytics class</h1>
+            <p class="view"><a href="https://github.com/mturnwall/Analytics_Class">View the Project on GitHub</a><br><small>(https://github.com/mturnwall/Analytics_Class)</small></p>
+            <ul>
+                <li><a href="https://github.com/mturnwall/Analytics_Class/zipball/master">Download <strong>ZIP File</strong></a></li>
+                <li><a href="https://github.com/mturnwall/Analytics_Class/tarball/master">Download <strong>TAR Ball</strong></a></li>
+                <li><a href="https://github.com/mturnwall/Analytics_Class">View On <strong>GitHub</strong></a></li>
+            </ul>
+        </header>
+        <section>
+            <h2>Description</h2>
+            <p>This is a javascript class that makes it real easy to add custom google analytics tracking to any web site. The goal of this class is to reduce the amount of custom javascript that needs to be written for custom google analytic tracking.</p>
+            <p>Here is the <a href="demo/">demo page</a>.</p>
+        </section>
 
-        <p class="view"><a href="https://github.com/mturnwall/Analytics_Class">View the Project on GitHub <small>mturnwall/Analytics_Class</small></a></p>
+        <section>
+            <h2>Usage</h2>
+            <p>Include <a href="http://jquery.com">jQuery</a> and the <code>analytics.js</code> file on your page. Don't forget to include the <a href="https://support.google.com/analytics/bin/answer.py?hl=en&answer=1008080">default tracking code</a> from Google. If you want to see if your events are tracking correctly  replace all references to <code>/ga.js</code> with <code>/u/ga_debug.js</code>. You'll now see a bunch of analytics output in your browser's console.</p>
+            <p>Here's an example of how the scripts should be loaded on your page</p>
+            <pre class="prettyprint">&lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="/path/to/analytics.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-XXXXX-Y']);
+    _gaq.push(['_trackPageview']);
 
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+&lt;/script&gt;</pre>
+            <h3>Setup Custom Tracking</h3>
+            <p>For each custom tracking event you need to add a new property into the <code>gaEvents</code> object. Then you need to add two data attributes to your element, <code>data-analytics-type</code> and <code>data-analytics-info</code>. The attribute <code>data-analytics-type</code> refers to the property you added to <code>gaEvents</code>.</p>
+            <h4>Example</h4>
+            <p>Here is an example of tracking a link to request more information.</p>
+            <pre class="prettyprint">gaEvents = {
+    'requestInfo': ['_trackEvent', 'Request More Information', 'link']
+};</pre>
+            <p>Add the data attributes to the HTML element</p>
+            <pre class="prettyprint">&lt;a class="printPage" href="#" data-analytics-typ="requestInfo" data-analytics-info="Additional Information"&gt;Request More Information&lt;/a&gt;</pre>
+            <p>When those pieces are in place here is the information that will get pushed to the <code>_gaq</code> object:</p>
+            <pre class="prettyprint">['_trackEvent', 'Request More Information', 'link', 'Additional Information']</pre>
 
-        <ul>
-          <li><a href="https://github.com/mturnwall/Analytics_Class/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/mturnwall/Analytics_Class/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/mturnwall/Analytics_Class">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>Welcome to GitHub Pages.</h3>
+            <h3>Outbound Links</h3>
+            <p>All outbound links are tracked automatically. If you wish to disable tracking of outbound links, make the <code>trackOutbound</code> option "false".</p>
+        </section>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+        <section>
+            <h2>Copyright and License</h2>
+            <!-- <p>Copyright (c) 2013 Michael Turnwall</p> -->
 
-<pre><code>$ cd your_repo_root/repo_name
+            <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+
+            <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+
+            <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="#http://www.gnu.org/licenses/">&lt;http://www.gnu.org/licenses/&gt;</a>.</p>
+        </section>
+
+<!-- <pre class="prettyprint"><code>$ cd your_repo_root/repo_name
 $ git fetch origin
 $ git checkout gh-pages
 </code></pre>
@@ -54,7 +107,7 @@ $ git checkout gh-pages
 <h3>Support or Contact</h3>
 
 <p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
+      </section> -->
       <footer>
         <p>This project is maintained by <a href="https://github.com/mturnwall">mturnwall</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
@@ -62,5 +115,5 @@ $ git checkout gh-pages
     </div>
     <script src="javascripts/scale.fix.js"></script>
     
-  </body>
+</body>
 </html>
