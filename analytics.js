@@ -89,12 +89,14 @@ GA = (function() {
 		 *  track outbound links, tracking fires after 200 ms to make sure it is recorded properly
 		 *  @param   {DOM Node} el the link that was clicked on
 		 */
-		outboundLinks: function (el) {
-			var href = el.href,
+		outboundLinks: function(el) {
+			var link = el.href,
 				exitType = (!href.match(/maps.google.com/ig)) ? 'exit' : 'Google Maps Driving Directions';
+			GA.pushTrackEvent([
+				['_trackEvent', 'Outbound Links', exitType, link]
+			]);
 			setTimeout(function() {
-				_gaq.push(['_trackEvent', 'Outbound Links', 'exit', href]);
-				location.href = href;
+				location.href = link;
 			}, 200);
 		},
 		trackSiteSearch: function (form) {
