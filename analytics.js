@@ -106,13 +106,13 @@ GA = (function() {
 				analyticsType = el.getAttribute('data-analytics-type') || false,
 				regexp = new RegExp('^http(s)?:\/\/([a-z]+\.)?(' + this.opts.domain + ')', 'ig'),
 				parameters = false;
-			if (!el.href.match(regexp) && this.opts.trackOutbound) {	// track outbound links
-				this.outboundLinks(el);
-				return false;
-			} else if (analyticsType) {
+			if (analyticsType) {
 				parameters = [];
 				analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
 				parameters = (this.factory(analyticsType, analyticsInfo));
+			} else if (!el.href.match(regexp)) {	// track outbound links
+				this.outboundLinks(el);
+				return false;
 			}
 			if (parameters) {
 				this.pushTrackEvent(parameters);
