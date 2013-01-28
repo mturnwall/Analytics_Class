@@ -1,11 +1,14 @@
+/*jshint onevar: true, sub: true, curly: true */
+/*global _gaq: true, $: true*/
+
 /**
- *  @preserve Copyright (c) 2013 Michael Turnwall
+ *  @license Copyright (c) 2013 Michael Turnwall
  *  Released under the GPL v3 License
  *  <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
  *  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
  *  <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/gpl-3.0.html">&lt;http://www.gnu.org/licenses/gpl-3.0.html&gt;</a>.</p>
  */
-GA = (function() {
+var GA = (function() {
 	var defaults = {
 			domain: '',
 			trackOutbound: true,
@@ -35,6 +38,7 @@ GA = (function() {
 			var target = arguments[0] || {},
 				i = 1,
 				length = arguments.length,
+				property,
 				source;
 			if (length === i) {
 				target = this;
@@ -43,7 +47,7 @@ GA = (function() {
 			for ( ; i < length; i++) {
 				source = arguments[i];
 				if (source !== null) {
-					for (var property in source) {
+					for (property in source) {
 						target[property] = source[property];
 					}
 				}
@@ -65,7 +69,7 @@ GA = (function() {
 		},
 		factory: function (gaType, gaOptions) {
 			var parameters = false,
-				key, i, z, gaEvent;
+				key, gaEvent;
 			if (this.gaEvents[gaType]) {
 				parameters = [];
 				for (key in this.gaEvents[gaType]) {
@@ -87,7 +91,7 @@ GA = (function() {
 		 *  @param   {Array} parameters an array of the parameters, ex. ['_trackEvent', 'Payment Calculator', 'submit']
 		 */
 		pushTrackEvent: function (parameters) {
-			var key, pageOutput;
+			var key;
 			for (key in parameters) {
 				_gaq.push(parameters[key]);
 			}
@@ -98,7 +102,7 @@ GA = (function() {
 		 */
 		outboundLinks: function(el) {
 			var link = el.href,
-				exitType = (!href.match(/maps.google.com/ig)) ? 'exit' : 'Google Maps Driving Directions';
+				exitType = (!link.match(/maps.google.com/ig)) ? 'exit' : 'Google Maps Driving Directions';
 			GA.pushTrackEvent([
 				['_trackEvent', 'Outbound Links', exitType, link]
 			]);
@@ -107,15 +111,13 @@ GA = (function() {
 			}, 200);
 		},
 		trackSiteSearch: function (form) {
-			this.pushTrackEvent(this.factory('siteSearch', form[opts.siteSearchInput].value));
+			this.pushTrackEvent(this.factory('siteSearch', form[this.opts.siteSearchInput].value));
 			return true;
 		},
 		trackForms: function (form) {
 			var analyticsType = form.getAttribute('data-analytics-type') || false,
 				analyticsInfo = '',
-				numOfFields = form.elements.length,
-				controlType,
-				i;
+				controlType;
 			if (analyticsType) {
 				$('input, select', form).each(function () {
 					controlType = this.getAttribute('type');
@@ -159,7 +161,7 @@ GA = (function() {
 				so e.preventDefault() is placed at the end of the binding
 				but sometimes we need to follow the link so those conditions return true
 			*/
-			$('body').on('click', 'a', function (e) {
+			$('body').on('click', 'a', function () {
 				return that.trackLinks(this);
 			});
 			/*
