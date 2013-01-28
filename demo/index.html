@@ -105,7 +105,8 @@
 	<script type="text/javascript">
 		$('document').ready(function () {
 			GA.init({
-				"testMe": ["_trackEvent", "Test", "current page"]
+				"testMe": ["_trackEvent", "Test", "current page"],
+				'contactUs': ["_trackEvent", "Contact Us"]
 			});
 		});
 		GA.pushTrackEvent = function (parameters) {
@@ -135,6 +136,17 @@
 			<li><a href="#" data-analytics-type="printPage">Print Page</a> - data-analytics-type="printPage"</li>
 			<li><a href="#" data-analytics-type="social" data-analytics-info="twitter,tweet">Tweet page</a> - data-analytics-type="social" data-analytics-info="twitter,tweet"</li>
 		</ul>
+		<form id="contactForm" action="search.php" method="post" data-analytics-type="contactUs">
+			<input type="hidden" name="sessionId" value="1234567890" data-analytics-track-value="true">
+			<label for="fName">First Name:</label> <input id="fName" type="text" name="fName" value="" data-analytics-track-value="true"><br>
+			<label for="lName">Last Name:</label> <input id="lName" type="text" name="lName" value="" data-analytics-track-value="true"><br>
+			<span>Gender:</span><br>
+			<label for="maleRadio">Male:</label> <input id="maleRadio" type="radio" name="gender" value="male" data-analytics-track-value="true">
+			<label for="femaleRadio">Female:</label> <input id="femaleRadio" type="radio" name="gender" value="female" data-analytics-track-value="true"><br>
+			<label for="newsletter">Newsletter</label> <input type="checkbox" id="newsletter" value="newsletterSignup" data-analytics-track-value="true"><br>
+			<label for="agreeTo">Agree to something?</label> <input id="agreeTo" type="checkbox" value="agree" data-analytics-track-value="true"><br>
+			<input type="submit" value="Submit">
+		</form>
 		<p>
 			This is the tracking code sent to Google analtyics. You can also see this in your browser's console.
 			<ol id="outputList"></ol>
