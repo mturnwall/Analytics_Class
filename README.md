@@ -45,7 +45,7 @@ gaEvents = {
 
 Add the data attributes to the HTML element
 ```html
-<a class="printPage" href="#" data-analytics-typ="requestInfo" data-analytics-info="Additional Information">Request More Information</a>
+<a class="printPage" href="#" data-analytics-type="requestInfo" data-analytics-info="Additional Information">Request More Information</a>
 ```
 
 When those pieces are in place here is the information that will get pushed to the `_gaq` object:

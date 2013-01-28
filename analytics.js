@@ -2,6 +2,7 @@ GA = (function() {
 	var defaults = {
 			domain: '',
 			trackOutbound: true,
+			siteSearchSelector: '#searchForm',
 			siteSearchInput: 'q'
 		},
 		/**
@@ -17,7 +18,7 @@ GA = (function() {
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
 		};
 	return {
-		'version': '0.3',
+		'version': '0.3.1',
 		/**
 		 *  extend an object by merging with other objects
 		 *  if only one object is passed in then it extends the GA class
@@ -81,7 +82,6 @@ GA = (function() {
 		pushTrackEvent: function (parameters) {
 			var key, pageOutput;
 			for (key in parameters) {
-				document.write('parameters to push =' + parameters[key]);
 				_gaq.push(parameters[key]);
 			}
 		},
@@ -103,6 +103,21 @@ GA = (function() {
 			this.pushTrackEvent(this.factory('siteSearch', form[opts.siteSearchInput].value));
 			return true;
 		},
+		trackForms: function (form) {
+			var analyticsType = form.getAttribute('data-analytics-type') || false,
+				analyticsInfo = '',
+				numOfFields = form.elements.length,
+				i;
+			$('input, select', form).each(function () {
+				if (this.getAttribute('data-analytics-track-value')) {
+					analyticsInfo += ':' + this.value;
+				}
+			});
+			if (analyticsType) {
+				this.pushTrackEvent(this.factory(analyticsType, analyticsInfo.substr(1)));
+			}
+			return true;
+		},
 		trackLinks: function (el) {
 			var analyticsInfo,
 				analyticsType = el.getAttribute('data-analytics-type') || false,
@@ -118,7 +133,7 @@ GA = (function() {
 			}
 			if (parameters) {
 				this.pushTrackEvent(parameters);
-				return false;
+				return true;
 			}
 		},
 		init: function (userEvents, options) {
@@ -131,11 +146,17 @@ GA = (function() {
 				so e.preventDefault() is placed at the end of the binding
 				but sometimes we need to follow the link so those conditions return true
 			*/
-			// _gaq.push(['_setDomainName', 'none']);
 			$('body').on('click', 'a', function (e) {
 				return that.trackLinks(this);
 			});
-			$('#searchForm').submit(function () {
+			/*
+				track all forms on the page
+			 */
+			$('form').on('submit', function() {
+				that.trackForms(this);
+				return false; // for testing change this to false so the form doesn't actually submit
+			});
+			$(this.opts.siteSearchSelector).submit(function () {
 				return that.trackSiteSearch(this);
 			});
 		}
