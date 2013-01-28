@@ -1,3 +1,10 @@
+/**
+ *  @preserve Copyright (c) 2013 Michael Turnwall
+ *  Released under the GPL v3 License
+ *  <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+ *  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+ *  <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/gpl-3.0.html">&lt;http://www.gnu.org/licenses/gpl-3.0.html&gt;</a>.</p>
+ */
 GA = (function() {
 	var defaults = {
 			domain: '',
@@ -18,7 +25,7 @@ GA = (function() {
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
 		};
 	return {
-		'version': '0.3.1',
+		'version': '0.3.2',
 		/**
 		 *  extend an object by merging with other objects
 		 *  if only one object is passed in then it extends the GA class
@@ -107,13 +114,19 @@ GA = (function() {
 			var analyticsType = form.getAttribute('data-analytics-type') || false,
 				analyticsInfo = '',
 				numOfFields = form.elements.length,
+				controlType,
 				i;
-			$('input, select', form).each(function () {
-				if (this.getAttribute('data-analytics-track-value')) {
-					analyticsInfo += ':' + this.value;
-				}
-			});
 			if (analyticsType) {
+				$('input, select', form).each(function () {
+					controlType = this.getAttribute('type');
+					if (this.getAttribute('data-analytics-track-value')) {
+						if (controlType === 'text' || controlType === 'hidden') {
+							analyticsInfo += ':' + this.value;
+						} else if ((controlType === 'radio' || controlType === 'checkbox') && this.checked) {
+							analyticsInfo += ':' + this.value;
+						}
+					}
+				});
 				this.pushTrackEvent(this.factory(analyticsType, analyticsInfo.substr(1)));
 			}
 			return true;
