@@ -86,7 +86,9 @@ GA.init({
 
 In that form if you fill out the name fields, select the "Male" radio button,  and the "Newsletter" checkbox, here is what will be sent to the tracking code.
 
-	[_trackEvent,Contact Us,1234567890:Michael:Turnwall:male:newsletterSignup]
+```js
+[_trackEvent,Contact Us,1234567890:Michael:Turnwall:male:newsletterSignup]
+```
 
 Copyright and License
 ----------------------

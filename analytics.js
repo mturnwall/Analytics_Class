@@ -28,7 +28,7 @@ var GA = (function() {
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
 		};
 	return {
-		'version': '0.3.2',
+		'version': '0.3.3',
 		/**
 		 *  extend an object by merging with other objects
 		 *  if only one object is passed in then it extends the GA class
@@ -153,8 +153,8 @@ var GA = (function() {
 		},
 		init: function (userEvents, options) {
 			var that = this;
-			this.opts = this.mergeObj(defaults, options);
 			this.gaEvents = this.mergeObj(gaEvents, userEvents);
+			this.opts = this.mergeObj(defaults, options);
 			/*
 				setup tracking for all links
 				the default behavior is to prevent the link's default behavior
