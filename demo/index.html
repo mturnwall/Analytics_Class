@@ -105,7 +105,9 @@
 	<script type="text/javascript">
 		$('document').ready(function () {
 			GA.init({
-				"testMe": ["_trackEvent", "Test", "current page"],
+				'testMe': ['_trackEvent', 'Test', 'current page'],
+				'printPage': ['_trackEvent', 'Print', 'current page'],
+				'social': [['_trackSocial'], ['_trackEvent',  'Social share']],
 				'contactUs': ["_trackEvent", "Contact Us"]
 			});
 		});
@@ -126,9 +128,10 @@
 		<p>
 			Here are some links to show examples of how the analytics code works. This is the custom <strong>gaEvents</strong> object that is passed into the Analytics Class<br>
 			<pre>{
-	"testMe": ["_trackEvent", "Test", "current page"],
+	'testMe': ['_trackEvent', 'Test', 'current page'],
 	'printPage': ['_trackEvent', 'Print', 'current page'],
-	'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
+	'social': [['_trackSocial'], ['_trackEvent',  'Social share']],
+	'contactUs': ["_trackEvent", "Contact Us"]
 }</pre>
 		</p>
 		<ul>
