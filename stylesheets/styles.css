@@ -8,7 +8,8 @@ body {
   margin: 0;
   padding: 0;
   font:15px/1.4em Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color: #ececec;
+  /*background: #ececec url('../images/subtlenet2.png') 0 0;*/
+  background: #ececec url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAeCAYAAABNChwpAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAUdEVYdENyZWF0aW9uIFRpbWUAMy82LzEygrTcTAAAAFRJREFUSIljfPDggZRf5RIGGNjUHsNATz6jXmSL1Kb2GLiAX+USBnrymRgGGDCORgFmoNAXjEbBaBSMRsFoFIxGwWgUjEbBaBSMRsFoFIxGwWgUAABYNujumib3wAAAAABJRU5ErkJggg==') 0 0;
   color:#777;
   font-weight:300;
 }
