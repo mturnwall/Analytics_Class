@@ -1,7 +1,7 @@
 Analytics Class
 ===================
 
-<a href="http://projects.turnwall.net/analytics_class/">Project Page</a> -- <a href="http://projects.turnwall.net/analytics_class/demo">Demo Page</a>
+<a href="http://projects.turnwall.net/Analytics_Class/">Project Page</a> -- <a href="http://projects.turnwall.net/Analytics_Class/demo">Demo Page</a>
 
 Description
 -------------
@@ -29,7 +29,7 @@ Include [jQuery](http://jquery.com) and the analytics.js file on your page. Don'
 ```
 
 
-### Setup Custom Tracking
+### Setup Custom Link Tracking
 
 For each custom tracking event you need to add a new property into the `gaEvents` object. Then you need to add two data attributes to your element, `data-analytics-type` and `data-analytics-info`. The attribute `data-analytics-type` refers to the property you added to `gaEvents`.
 
@@ -45,7 +45,7 @@ gaEvents = {
 
 Add the data attributes to the HTML element
 ```html
-<a class="printPage" href="#" data-analytics-typ="requestInfo" data-analytics-info="Additional Information">Request More Information</a>
+<a class="printPage" href="#" data-analytics-type="requestInfo" data-analytics-info="Additional Information">Request More Information</a>
 ```
 
 When those pieces are in place here is the information that will get pushed to the `_gaq` object:
@@ -55,6 +55,40 @@ When those pieces are in place here is the information that will get pushed to t
 ### Outbound Links
 
 All outbound links are tracked automatically. If you wish to disable tracking of outbound links, make the `trackOutbound` option "false".
+
+### Tracking Forms
+
+Tracking a form is just a matter of adding some attributes to your form tags and any form controls you want to track. Just like with links you need to add a `data-analytics-type` attribute to the form that has a value that matches a key in your `gaEvents` object.
+
+By default no values from the form controls are passed as arguments to the tracking code so you need to add an attribute to any form control you want to track, `data-analytics-track-value="true"`. Any form control that has the `data-analytics-track-value` will have it's value concatenated to a colon (:) delimited list and passed as an additional argument to the tracking code.
+
+Here is an example form that has the custom data attributes added.
+
+```js
+GA.init({
+	'contactUs': ["_trackEvent", "Contact Us"]
+});
+```
+
+```html
+<form id="contactForm" action="search.php" method="post" data-analytics-type="contactUs">
+	<input type="hidden" name="sessionId" value="1234567890" data-analytics-track-value="true">
+	<label for="fName">First Name:</label> <input id="fName" type="text" name="fName" value="" data-analytics-track-value="true">
+	<label for="lName">Last Name:</label> <input id="lName" type="text" name="lName" value="" data-analytics-track-value="true">
+	<span>Gender:</span>
+	<label for="maleRadio">Male:</label> <input id="maleRadio" type="radio" name="gender" value="male" data-analytics-track-value="true">
+	<label for="femaleRadio">Female:</label> <input id="femaleRadio" type="radio" name="gender" value="female" data-analytics-track-value="true">
+	<label for="newsletter">Newsletter</label> <input type="checkbox" id="newsletter" value="newsletterSignup" data-analytics-track-value="true">
+	<label for="agreeTo">Agree to something?</label> <input id="agreeTo" type="checkbox" value="agree" data-analytics-track-value="true">
+	<input type="submit" value="Submit">
+</form>
+```
+
+In that form if you fill out the name fields, select the "Male" radio button,  and the "Newsletter" checkbox, here is what will be sent to the tracking code.
+
+```js
+[_trackEvent,Contact Us,1234567890:Michael:Turnwall:male:newsletterSignup]
+```
 
 Copyright and License
 ----------------------

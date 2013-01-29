@@ -5,8 +5,9 @@
   box-sizing: border-box;
 }
 body {
-  padding:10px;
-  font:16px/1.5em Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  font:15px/1.4em Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-color: #ececec;
   color:#777;
   font-weight:300;
@@ -31,8 +32,12 @@ h1 {
 
 h2 {
   color:#393939;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ccc
 }
-
+h3, h4 {
+  padding-top: 15px;
+}
 h3, h4, h5, h6 {
   color:#494949;
 }
@@ -54,15 +59,13 @@ a small {
 }
 
 .wrapper {
-  width:860px;
+  width:940px;
   margin:0 auto;
   padding: 20px;
   background-color: #fafafa;
   overflow: hidden;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow:  0px 0px 5px 0px rgba(125, 125, 125, .5);
-  box-shadow:  0px 0px 5px 0px rgba(125, 125, 125, .5);
+  -webkit-box-shadow:  0px 0px 8px 0px rgba(125, 125, 125, .5);
+  box-shadow:  0px 0px 8px 0px rgba(125, 125, 125, .5);
 }
 
 blockquote {
@@ -79,6 +82,7 @@ code, pre {
 }
 
 code {
+  color: #333;
   background-color: #ececec;
   border: 1px solid #e0e0e0;
   border-radius: 3px;
@@ -99,7 +103,9 @@ pre {
   white-space: -o-pre-wrap;    /* Opera 7 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
-
+code, pre.prettyprint {
+  font-family: 'Source code Pro', Menlo, Monaco, Consolas, monospace;
+}
 table {
   width:100%;
   border-collapse:collapse;
@@ -197,7 +203,7 @@ header ul a strong {
 }
 
 section {
-  width:500px;
+  width:600px;
   float:right;
   padding-top: 5px;
   padding-bottom:30px;
@@ -239,8 +245,7 @@ footer {
   }
   
   section {
-    border:1px solid #e5e5e5;
-    border-width:1px 0;
+
     padding:20px 0;
     margin:0 0 20px;
   }
