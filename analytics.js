@@ -26,15 +26,62 @@ var GA = (function() {
 			'siteSearch': ['_trackEvent', 'Quick Search', 'main search'],
 			'printPage': ['_trackEvent', 'Print', 'current page'],
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
+		},
+		availableProviders = {
+			'Google': {
+				defaults: {
+					domain: '',
+					debug: false,
+					trackingId: ''
+				},
+				init: function (opts) {
+					var _gaq = _gaq || [],
+						googleScript,
+						options;
+					options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
+					console.log(options);
+					scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
+					_gaq.push(['_setAccount', options.trackingId]);
+					_gaq.push(['_trackPageview']);
+					(function() {
+						var ga, s;
+						ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+						ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/' + scriptName;
+						s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+					})();
+				}
+			}
 		};
 	return {
-		'version': '0.3.3',
+		'version': '0.4',	// added load feature
+		'ready': false,		// false means the analytics code is not ready (loaded)
+		/**
+		 *  Loop through the availableProviders matching the ones passed in by the user
+		 *  If a match is found call the initalize function for that provided to set necessary
+		 *  options and load the provider's scripts.
+		 *  Right now only Google Analytics is supported
+		 *  @param {Object} providers list of providers to enable as well as any
+		 *                  options to set for the provider
+		 */
+		load: function (providers) {
+			var key, provider, options;
+			for (key in providers) {
+				provider = availableProviders[key];
+				if (provider) {
+					provider.init(providers[key]);
+				} else {
+					throw new Error('Sorry, no provider with the name of "' + key + '" is available');
+				}
+			}
+			/** we are ready to do some tracking */
+			this.ready = true;
+		},
 		/**
 		 *  extend an object by merging with other objects
 		 *  if only one object is passed in then it extends the GA class
 		 *  @return {Object} the merged objects
 		 */
-		mergeObj: function () {
+		extend: function () {
 			var target = arguments[0] || {},
 				i = 1,
 				length = arguments.length,
@@ -153,8 +200,8 @@ var GA = (function() {
 		},
 		init: function (userEvents, options) {
 			var that = this;
-			this.gaEvents = this.mergeObj(gaEvents, userEvents);
-			this.opts = this.mergeObj(defaults, options);
+			this.gaEvents = this.extend(gaEvents, userEvents);
+			this.opts = this.extend(defaults, options);
 			/*
 				setup tracking for all links
 				the default behavior is to prevent the link's default behavior
