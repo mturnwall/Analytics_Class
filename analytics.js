@@ -35,11 +35,10 @@ var GA = (function() {
 					trackingId: ''
 				},
 				init: function (opts) {
-					var _gaq = _gaq || [],
-						googleScript,
-						options;
+					var googleScript,
+						option,
+						_gaq = window._gaq = window._gaq || []; // gaq is attached to window so scope is beyond this function
 					options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
-					console.log(options);
 					scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
 					_gaq.push(['_setAccount', options.trackingId]);
 					_gaq.push(['_trackPageview']);
