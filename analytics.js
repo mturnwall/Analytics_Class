@@ -32,6 +32,7 @@ var GA = (function() {
 				defaults: {
 					domain: '',
 					debug: false,
+					enhancedLink: false,
 					trackingId: ''
 				},
 				init: function (opts) {
@@ -40,7 +41,17 @@ var GA = (function() {
 						_gaq = window._gaq = window._gaq || []; // gaq is attached to window so scope is beyond this function
 					options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
 					scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
-					_gaq.push(['_setAccount', options.trackingId]);
+					if (options.enhancedLink) {
+						_gaq.push(['_require', 'inpage_linkid', '//www.google-analytics.com/plugins/ga/inpage_linkid.js']);
+					}
+					if (options.trackingId) {
+						_gaq.push(['_setAccount', options.trackingId]);
+					} else {
+						throw new Error('You need to provide a tracking ID for Google Analytics');
+					}
+					if (options.domain) {
+						_gaq.push(['_setDomainName', options.domain]);
+					}
 					_gaq.push(['_trackPageview']);
 					(function() {
 						var ga, s;
@@ -52,7 +63,7 @@ var GA = (function() {
 			}
 		};
 	return {
-		'version': '0.4',	// added load feature
+		'version': '0.4.1',	// added load feature
 		'ready': false,		// false means the analytics code is not ready (loaded)
 		/**
 		 *  Loop through the availableProviders matching the ones passed in by the user
