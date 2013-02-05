@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Analytic Test Suite</title>
 <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css">
-<link rel="stylesheet" href="libs/mocha.css">
+<link rel="stylesheet" href="css/mocha.css">
 <style>
 body {
 	margin: 0;
@@ -50,7 +50,9 @@ window.mocha.setup({
 var assert = chai.assert,
 	expect = chai.expect;
 </script>
-<script src="tests.js"></script>
+<script src="test_utilities.js"></script>
+<script src="test_outbound.js"></script>
+<script src="test_links.js"></script>
 <script>
 	// setup globals
 	var $_body = $('body'),
