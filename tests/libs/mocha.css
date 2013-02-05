@@ -1,12 +1,13 @@
 @charset "utf-8";
 
 body {
+  color: #333;
   font: 20px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 60px 50px;
 }
 
 #mocha ul, #mocha li {
-  margin: 0;
+  margin: 0 0 5px;
   padding: 0;
 }
 
@@ -125,7 +126,7 @@ body {
 }
 
 #mocha .test pre.error {
-  color: #c00;
+  color: #CC0000;
   max-height: 300px;
   overflow: auto;
 }
@@ -143,6 +144,10 @@ body {
   -webkit-box-shadow: 0 1px 3px #eee;
   -moz-border-radius: 3px;
   -moz-box-shadow: 0 1px 3px #eee;
+  box-shadow: 0 1px 3px rgba(0,0,0, 0.3);
+  border-color: #ccc;
+  margin-left: 13px;
+  border-radius: 3px;
 }
 
 #mocha .test h2 {
