@@ -13,7 +13,8 @@ var GA = (function() {
 			domain: '',
 			trackOutbound: true,
 			siteSearchSelector: '#searchForm',
-			siteSearchInput: 'q'
+			siteSearchInput: 'q',
+			timer: 200
 		},
 		/**
 		 *	Add your custom tracking properties here or
@@ -154,7 +155,7 @@ var GA = (function() {
 			]);
 			setTimeout(function() {
 				location.href = link;
-			}, 200);
+			}, this.opts.timer);
 		},
 		trackSiteSearch: function (form) {
 			this.pushTrackEvent(this.factory('siteSearch', form[this.opts.siteSearchInput].value));

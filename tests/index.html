@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Analytic Test Suite</title>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css">
+<link rel="stylesheet" href="libs/mocha.css">
+<style>
+body {
+	margin: 0;
+	padding: 0;
+}
+#mocha {
+	margin: 0 auto;
+	padding: 20px;
+	width: 960px;
+}
+	header {
+		font-size: 32px;
+	}
+</style>
+<script src="libs/jquery-1.8.3.js"></script>
+<script src="../analytics.js"></script>
+</head>
+
+<body>
+
+<div id="mocha">
+	<header>
+		<h1>Analytics Test Suite</h1>
+	</header>
+</div>
+
+<script src="libs/chai.js"></script>
+<script src="libs/sinon.js"></script>
+<script src="libs/mocha.js"></script>
+<script>
+// setup mocha
+window.mocha.setup({
+	ui : 'tdd',
+	ignoreLeaks : true
+});
+// assign assertion library
+var assert = chai.assert,
+	expect = chai.expect;
+</script>
+<script src="tests.js"></script>
+<script>
+	// setup globals
+	var $_body = $('body'),
+		// fake _gaq so we don't actually need to load google analytics
+		_gaq = {
+			push: function () {
+				// console.log(arguments);
+			}
+		};
+	// initialize the class
+	GA.init({
+		'testLink': ['_trackEvent', 'Testing Links', 'link'],
+		'testSocial': [['_trackSocial'], ['_trackEvent',  'Test Social']]
+	}, {
+		domain: 'example.com',
+		timer: 10000000
+	});
+	// run the test suite
+	if (window.mochaPhantomJS) {
+		mochaPhantomJS.run();
+	} else {
+		mocha.run();
+	}
+</script>
+</body>
+</html>
