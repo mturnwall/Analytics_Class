@@ -2,7 +2,7 @@ var count = 0,
 	errCount = false,
 	pages = [
 		{
-			url: 'http://localhost/repos/analytics_class/demo',
+			url: 'http://marinemax.digitaria.com/boats/details/4187897/new/sea-ray-190-sport.aspx#',
 			tests: 'integration_test.js'
 		},
 		{
