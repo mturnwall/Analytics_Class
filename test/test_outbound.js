@@ -13,7 +13,7 @@
 			spy = sinon.spy(_gaq, 'push');
 		});
 
-		test('Outbound returns false', function () {
+		test('Outbound returns false so that links aren\'t followed', function () {
 			link = $('#outboundLink');
 			expect(GA.trackLinks(a[0])).to.be.false;
 		});
@@ -23,7 +23,7 @@
 			assert(spy.called, '_gaq was not called');
 		});
 
-		test('parameters pushed are correct', function () {
+		test('parameters pushed to _gaq are correct', function () {
 			var exitType = 'exit',
 				link = 'http://www.google.com/';
 			a.trigger('click');
@@ -37,9 +37,9 @@
 					text: 'Outbound link'
 				}).appendTo($_body),
 				exitType = 'exit',
-					link = 'http://www.example.com/';
+				link = 'http://www.example.com/';
 			internalLink.trigger('click');
-			assert.equal(spy.called, false, 'an internal link is being tracked as an outbound link');
+			assert.equal(spy.called, false, link + ' is tracked as an outbound link');
 
 			internalLink.remove();
 		});

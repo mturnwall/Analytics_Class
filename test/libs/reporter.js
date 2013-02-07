@@ -62,7 +62,7 @@
     };
 
     mocha.setup({
-        ui: 'bdd',
+        ui: 'tdd',
         ignoreLeaks: true,
         reporter: Reporter
     });

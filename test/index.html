@@ -53,6 +53,7 @@ var assert = chai.assert,
 <script src="test_utilities.js"></script>
 <script src="test_outbound.js"></script>
 <script src="test_links.js"></script>
+<!-- <script src="test_custom_events.js"></script> -->
 <script>
 	// setup globals
 	var $_body = $('body'),
@@ -72,6 +73,7 @@ var assert = chai.assert,
 	});
 	// run the test suite
 	if (window.mochaPhantomJS) {
+		console.log('phantom');
 		mochaPhantomJS.run();
 	} else {
 		mocha.run();
