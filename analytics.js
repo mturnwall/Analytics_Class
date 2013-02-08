@@ -13,7 +13,8 @@ var GA = (function() {
 			domain: '',
 			trackOutbound: true,
 			siteSearchSelector: '#searchForm',
-			siteSearchInput: 'q'
+			siteSearchInput: 'q',
+			timer: 200
 		},
 		/**
 		 *	Add your custom tracking properties here or
@@ -38,7 +39,7 @@ var GA = (function() {
 				init: function (opts) {
 					var googleScript,
 						option,
-						_gaq = window._gaq = window._gaq || []; // gaq is attached to window so scope is beyond this function
+						_gaq = window._gaq = window._gaq || []; // _gaq is attached to window so scope is beyond this function
 					options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
 					scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
 					if (options.enhancedLink) {
@@ -73,6 +74,11 @@ var GA = (function() {
 		 *  @param {Object} providers list of providers to enable as well as any
 		 *                  options to set for the provider
 		 */
+		cleanValue: function (value) {
+			value = value.replace(/^(\s)*/, '');
+			value = value.replace(/(\s)*$/, '');
+			return value;
+		},
 		load: function (providers) {
 			var key, provider, options;
 			for (key in providers) {
@@ -116,7 +122,8 @@ var GA = (function() {
 			if (gaOptions) {
 				if (typeof gaOptions !== 'string') {
 					for (i=0, z=gaOptions.length; i<z; i++) {
-						params.push(gaOptions[i] || '');
+						// remove any whitespace at the beginning of the string
+						params.push(this.cleanValue(gaOptions[i]) || '');
 					}
 				} else {
 					params.push(gaOptions);
@@ -145,7 +152,7 @@ var GA = (function() {
 		},
 		/**
 		 *  push information to the tracking object
-		 *  @param   {Array} parameters an array of the parameters, ex. ['_trackEvent', 'Payment Calculator', 'submit']
+		 *  @param   {Array} parameters an array of the parameters, ex. [['_trackEvent', 'Payment Calculator', 'submit']]
 		 */
 		pushTrackEvent: function (parameters) {
 			var key;
@@ -165,7 +172,7 @@ var GA = (function() {
 			]);
 			setTimeout(function() {
 				location.href = link;
-			}, 200);
+			}, this.opts.timer);
 		},
 		trackSiteSearch: function (form) {
 			this.pushTrackEvent(this.factory('siteSearch', form[this.opts.siteSearchInput].value));
@@ -192,13 +199,13 @@ var GA = (function() {
 		},
 		trackLinks: function (el) {
 			var analyticsInfo,
-				analyticsType = el.getAttribute('data-analytics-type') || false,
 				regexp = new RegExp('^http(s)?:\/\/([a-z]+\.)?(' + this.opts.domain + ')', 'ig'),
 				parameters = false;
-			if (analyticsType) {
+			this.analyticsType = el.getAttribute('data-analytics-type') || false;
+			if (this.analyticsType) {
 				parameters = [];
-				analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
-				parameters = (this.factory(analyticsType, analyticsInfo));
+				this.analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
+				parameters = (this.factory(this.analyticsType, this.analyticsInfo));
 			} else if (!el.href.match(regexp)) {	// track outbound links
 				this.outboundLinks(el);
 				return false;
