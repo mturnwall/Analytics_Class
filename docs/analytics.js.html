@@ -1,12 +1,48 @@
-/*jshint onevar: true, sub: true, curly: true */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: analytics.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: analytics.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/*jshint onevar: true, sub: true, curly: true */
 /*global _gaq: true, $: true*/
 
 /**
- *  @license Copyright (c) 2013 Michael Turnwall
+ *  A javascript class that makes it real easy to add custom google analytics tracking to any web site.
+ *  The goal of this class is to reduce the amount of custom javascript that needs to be written for custom google analytic tracking.
+ *
+ *  @author Michael Turnwall
+ *
+ *	@class  GA
+ *	@property {String} version
+ *	@property {Boolean} ready false means the analytics code is not ready
+ *
+ *  @copyright Copyright (c) 2013 Michael Turnwall
  *  Released under the GPL v3 License
- *  <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
- *  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
- *  <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/gpl-3.0.html">&lt;http://www.gnu.org/licenses/gpl-3.0.html&gt;</a>.</p>
+ *  &lt;p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/p>
+ *  &lt;p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p>
+ *  &lt;p>You should have received a copy of the GNU General Public License along with this program. If not, see &lt;a href="http://www.gnu.org/licenses/gpl-3.0.html">&lt;http://www.gnu.org/licenses/gpl-3.0.html&gt;&lt;/a>.&lt;/p>
  */
 var GA = (function() {
 	var defaults = {
@@ -66,19 +102,24 @@ var GA = (function() {
 	return {
 		'version': '0.4.1',	// added load feature
 		'ready': false,		// false means the analytics code is not ready (loaded)
+		
 		/**
-		 *  Loop through the availableProviders matching the ones passed in by the user
-		 *  If a match is found call the initalize function for that provided to set necessary
-		 *  options and load the provider's scripts.
-		 *  Right now only Google Analytics is supported
-		 *  @param {Object} providers list of providers to enable as well as any
-		 *                  options to set for the provider
+		 *  remove whitespace from the beginning and end of a string
+		 *  @param   {String} value a string to remove whitespace from
+		 *  @returns {String} the same string with whitespace removed
 		 */
 		cleanValue: function (value) {
 			value = value.replace(/^(\s)*/, '');
 			value = value.replace(/(\s)*$/, '');
 			return value;
 		},
+		/**
+		 *  Loop through the availableProviders matching the ones passed in by the user
+		 *  If a match is found call the initalize function for that provided to set necessary
+		 *  options and load the provider's scripts.
+		 *  Right now only Google Analytics is supported
+		 *  @param {Object} providers list of providers to enable as well as any options to set for the provider
+		 */
 		load: function (providers) {
 			var key, provider, options;
 			for (key in providers) {
@@ -107,7 +148,7 @@ var GA = (function() {
 				target = this;
 				i = 0;
 			}
-			for ( ; i < length; i++) {
+			for ( ; i &lt; length; i++) {
 				source = arguments[i];
 				if (source !== null) {
 					for (property in source) {
@@ -121,7 +162,7 @@ var GA = (function() {
 			var i, z, params = parameters;
 			if (gaOptions) {
 				if (typeof gaOptions !== 'string') {
-					for (i=0, z=gaOptions.length; i<z; i++) {
+					for (i=0, z=gaOptions.length; i&lt;z; i++) {
 						// remove any whitespace at the beginning of the string
 						params.push(this.cleanValue(gaOptions[i]) || '');
 					}
@@ -178,6 +219,12 @@ var GA = (function() {
 			this.pushTrackEvent(this.factory('siteSearch', form[this.opts.siteSearchInput].value));
 			return true;
 		},
+		/**
+		 *  Setup tracking for forms. Any form control that has data-analytics-track-value="true"
+		 *  on the tag will have it's value pushed to _gaq. Values are separated by a colon.
+		 *  @param   {DOM Node} form the form that is going to be tracked
+		 *  @returns {Boolean} true so that the form will still submit as normal
+		 */
 		trackForms: function (form) {
 			var analyticsType = form.getAttribute('data-analytics-type') || false,
 				analyticsInfo = '',
@@ -197,6 +244,13 @@ var GA = (function() {
 			}
 			return true;
 		},
+		/**
+		 *  Determines if a link is an outbound link or not. This method will pull the values from
+		 *  data-analytics-type and data-analytics-info to contruct the Array that will get pushed to _gaq
+		 *  @param   {DOM Node} el the link that had it's click event triggered
+		 *  @returns {Boolean} if internal link return true so that the link is followed. Outbound links
+		 *                        returns false to allow time for the _gaq.push() method to fire
+		 */
 		trackLinks: function (el) {
 			var analyticsInfo,
 				regexp = new RegExp('^http(s)?:\/\/([a-z]+\.)?(' + this.opts.domain + ')', 'ig'),
@@ -215,6 +269,11 @@ var GA = (function() {
 				return true;
 			}
 		},
+		/**
+		 *  Setups the object's options and bind events to elements that need to be tracked
+		 *  @param   {Object} userEvents key:value pairs of the custom events that need to be tracked
+		 *  @param   {Object} options user defined options that override the default options
+		 */
 		init: function (userEvents, options) {
 			var that = this;
 			this.gaEvents = this.extend(gaEvents, userEvents);
@@ -240,4 +299,25 @@ var GA = (function() {
 			});
 		}
 	};
-})();
+})();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="GA.html">GA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#cleanValue">cleanValue</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#outboundLinks">outboundLinks</a></li><li><a href="global.html#pushTrackEvent">pushTrackEvent</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#trackForms">trackForms</a></li><li><a href="global.html#trackLinks">trackLinks</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Feb 09 2013 21:57:57 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>
