@@ -1,7 +1,7 @@
 Analytics Class
 ===================
 
-<a href="http://projects.turnwall.net/Analytics_Class/">Project Page</a> -- <a href="http://projects.turnwall.net/Analytics_Class/demo">Demo Page</a>
+[Project Page](http://projects.turnwall.net/Analytics_Class) -- [Demo Page](http://projects.turnwall.net/Analytics_Class/demo)
 
 Description
 -------------
