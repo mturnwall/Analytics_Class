@@ -1,0 +1,15 @@
+{
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "markdown": {
+    "parser": "gfm"
+  },
+  "source": {
+    "include": ["src/analytics.js", "README.md"]
+  },
+  "opts": {
+    "destination": "./docs",
+    "recurse": true
+  }
+}
