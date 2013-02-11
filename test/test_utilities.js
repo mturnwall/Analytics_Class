@@ -2,17 +2,6 @@
 	Testing class utilities
  */
 (function () {
-	var obj1 = {
-			hello: 'world',
-			world: 'hello'
-		},
-		obj2 = {
-			testing: 'objects',
-			hello: 'is not the world'
-		},
-		mergedObj,
-		spy;
-	// console.log(obj1);
 	suite('Test Utilities', function () {
 
 		suite('cleanValue() - removing whitespace', function () {
@@ -31,13 +20,22 @@
 		});
 
 		suite('extend() - merging objects', function () {
+				var obj1 = {
+						hello: 'world',
+						world: 'hello'
+					},
+					obj2 = {
+						testing: 'objects',
+						hello: 'is not the world'
+					},
+					mergedObj,
+					spy;
 			setup(function () {
 				spy = sinon.spy(GA, 'extend');
 				mergedObj = GA.extend({}, obj1, obj2);
 			});
 			
 			test('returns an object', function () {
-				console.log(spy.args);
 				assert.isObject(mergedObj, 'mergedObj is an object');
 			});
 
@@ -52,17 +50,36 @@
 
 			test('original obj1 is modified with properties from obj2', function () {
 				var returnObj = GA.extend(obj1, obj2);
-				console.log(returnObj.hello);
 				assert.equal(returnObj.hello, 'is not the world', '');
 			});
-
-
 
 			teardown(function () {
 				mergedObj = '';
 				spy.restore();
 			});
 
+		});
+
+		suite("loadProviders() - loading providers", function () {
+			var spyLoad;
+			setup(function () {
+				spyLoad = sinon.spy(GA, 'loadProviders');
+			});
+
+			// test('provider not found', function () {
+			// 	GA.loadProviders({
+			// 		'Goole': {
+			// 			'trackingId': 'UA-XXXXXX-X',
+			// 			'domain': 'marinemax',
+			// 			'debug': true
+			// 		}
+			// 	});
+			// 	expect(GA.loadProviders).to.throw('Sorry, no provider with the name of "Goole" is available');
+			// });
+
+			teardown(function () {
+				spyLoad.restore();
+			});
 		});
 
 	});
