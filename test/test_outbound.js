@@ -5,6 +5,7 @@
 	suite('Outbound Links', function () {
 		var a, spy;
 		setup(function () {
+			// create a link that has an external href
 			a = $('<a/>', {
 				id: 'outboundLink',
 				href: 'http://www.google.com',

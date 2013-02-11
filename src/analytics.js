@@ -230,14 +230,14 @@ var GA = (function() {
 		 */
 		trackLinks: function (el) {
 			var analyticsInfo,
-				regexp = new RegExp('^http(s)?:\/\/([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
+				regexp = new RegExp('^http(s)?://([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
 				parameters = false;
 			this.analyticsType = el.getAttribute('data-analytics-type') || false;
 			if (this.analyticsType) {
 				parameters = [];
 				this.analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
 				parameters = (this.factory(this.analyticsType, this.analyticsInfo));
-			} else if (!el.href.match(regexp)) {	// track outbound links
+			} else if (!regexp.test(el.href)) {	// track outbound links
 				this.outboundLinks(el);
 				return false;
 			}
