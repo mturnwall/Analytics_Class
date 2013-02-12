@@ -19,8 +19,8 @@ var GA = (function() {
 	var defaults = {
 			domain: '',
 			trackOutbound: true,
-			siteSearchSelector: '#searchForm',
-			siteSearchInput: 'q',
+			siteSearchSelector: '',
+			siteSearchInput: '',
 			timer: 200
 		},
 		/**
@@ -71,7 +71,7 @@ var GA = (function() {
 			}
 		};
 	return {
-		'version': '0.4.1',	// added load feature
+		'version': '0.4.2',	// added load feature
 		'ready': false,		// false means the analytics code is not ready (loaded)
 		
 		/**
@@ -100,12 +100,6 @@ var GA = (function() {
 				} catch(e) {
 					throw new Error('Sorry, no provider with the name of "' + key + '" is available');
 				}
-				
-				// if (provider) {
-					
-				// } else {
-					
-				// }
 			}
 			/** we are ready to do some tracking */
 			this.ready = true;
@@ -230,14 +224,14 @@ var GA = (function() {
 		 */
 		trackLinks: function (el) {
 			var analyticsInfo,
-				regexp = new RegExp('^http(s)?:\/\/([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
+				regexp = new RegExp('^http(s)?://([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
 				parameters = false;
 			this.analyticsType = el.getAttribute('data-analytics-type') || false;
 			if (this.analyticsType) {
 				parameters = [];
 				this.analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
 				parameters = (this.factory(this.analyticsType, this.analyticsInfo));
-			} else if (!el.href.match(regexp)) {	// track outbound links
+			} else if (!regexp.test(el.href)) {	// track outbound links
 				this.outboundLinks(el);
 				return false;
 			}
@@ -267,13 +261,17 @@ var GA = (function() {
 			/*
 				track all forms on the page
 			 */
-			$('form').on('submit', function() {
-				that.trackForms(this);
-				return false; // for testing change this to false so the form doesn't actually submit
-			});
-			$(this.opts.siteSearchSelector).submit(function () {
-				return that.trackSiteSearch(this);
-			});
+			if ($('form').not(this.opts.siteSearchSelector).length) {
+				$('form').not(this.opts.siteSearchSelector).on('submit', function() {
+					that.trackForms(this);
+					return false; // for testing change this to false so the form doesn't actually submit
+				});
+			}
+			if ($(this.opts.siteSearchSelector.length)) {
+				$(this.opts.siteSearchSelector).submit(function () {
+					return that.trackSiteSearch(this);
+				});
+			}
 		}
 	};
 })();
