@@ -261,13 +261,17 @@ var GA = (function() {
 			/*
 				track all forms on the page
 			 */
-			$('form').on('submit', function() {
-				that.trackForms(this);
-				return false; // for testing change this to false so the form doesn't actually submit
-			});
-			$(this.opts.siteSearchSelector).submit(function () {
-				return that.trackSiteSearch(this);
-			});
+			if ($('form').not(this.opts.siteSearchSelector).length) {
+				$('form').not(this.opts.siteSearchSelector).on('submit', function() {
+					that.trackForms(this);
+					return false; // for testing change this to false so the form doesn't actually submit
+				});
+			}
+			if ($(this.opts.siteSearchSelector.length)) {
+				$(this.opts.siteSearchSelector).submit(function () {
+					return that.trackSiteSearch(this);
+				});
+			}
 		}
 	};
 })();
