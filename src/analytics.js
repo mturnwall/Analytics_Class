@@ -19,8 +19,8 @@ var GA = (function() {
 	var defaults = {
 			domain: '',
 			trackOutbound: true,
-			siteSearchSelector: '#searchForm',
-			siteSearchInput: 'q',
+			siteSearchSelector: '',
+			siteSearchInput: '',
 			timer: 200
 		},
 		/**
@@ -71,7 +71,7 @@ var GA = (function() {
 			}
 		};
 	return {
-		'version': '0.4.1',	// added load feature
+		'version': '0.4.2',	// added load feature
 		'ready': false,		// false means the analytics code is not ready (loaded)
 		
 		/**
@@ -100,12 +100,6 @@ var GA = (function() {
 				} catch(e) {
 					throw new Error('Sorry, no provider with the name of "' + key + '" is available');
 				}
-				
-				// if (provider) {
-					
-				// } else {
-					
-				// }
 			}
 			/** we are ready to do some tracking */
 			this.ready = true;
