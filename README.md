@@ -46,6 +46,8 @@ Once those files and code are added to the page you need to call the `init()` me
 	</script>
 ```
 
+### Usine the load() method
+
 The simpler method is to use the `loadProviders()` method. This will load the Google analytics file for you and set everything up. You pass an object to the method with the options you want to set for Google Analytics.
 
 ```js
