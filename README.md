@@ -54,7 +54,7 @@ The simpler method is to use the `loadProviders()` method. This will load the Go
 	GA.loadProviders({
 		'Google': {
 			'trackingId': 'UA-XXXXXX-X',
-			'domain': 'marinemax',
+			'domain': 'example',
 			'enhancedLink': true
 		}
 	});
@@ -83,7 +83,7 @@ If the only setting you need to set is the tracking ID you can just pass that as
 		GA.loadProviders({
 			'Google': {
 				'trackingId': 'UA-XXXXXX-X',
-				'domain': 'marinemax',
+				'domain': 'example',
 				'enhancedLink': true
 			}
 		});
@@ -179,6 +179,8 @@ Copyright and License
 ----------------------
 
 Copyright (c) 2013 Michael Turnwall
+
+GA - Analytics Class is relased under a [GPL3 license](LICENSE).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
