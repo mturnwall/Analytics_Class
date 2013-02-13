@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="stylesheets/styles.css">
 <link rel="stylesheet" href="stylesheets/pygment_trac.css">
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="highlighter/prettify.js"></script>
 <script>
     if (window.addEventListener) {
@@ -19,6 +20,17 @@
     } else if (window.attachEvent)  {
         window.attachEvent('load', prettyPrint);
     }
+    // $(document).ready(function () {
+    //     $('#subNav a').on('click', function (e) {
+    //         console.log(this.href.match(/#[a-z+]/)[0]);
+    //         var scroll = $(this.href.match(/#[a-z]+/i)[0]).offset().top;
+    //         console.log(scroll);
+    //         e.preventDefault();
+    //         $('html, body').animate({
+    //             scrollTop: scroll
+    //         });
+    //     });
+    // });
 </script>
 
 <!--[if lt IE 9]>
@@ -40,36 +52,91 @@
             <h2>Description</h2>
             <p>This is a javascript class that makes it real easy to add custom google analytics tracking to any web site. The goal of this class is to reduce the amount of custom javascript that needs to be written for custom google analytic tracking.</p>
             <p>Right now the code automatically tracks all outbound links except for social sharing links such as facebook.com or twitter.com. Links and forms are also tracked but require very minimal setup.</p>
-            <ul>
+            <ul id="subNav">
+                <li><a href="#setup">Setup</a></li>
+                <li><a href="#customTracking">Setup Custom Link Tracking</a></li>
                 <li><a href="#outboundLinks">Outbound Links</a></li>
-                <li><a href="#customTracking">Setup Custom Tracking</a></li>
                 <li><a href="#trackingForms">Tracking Forms</a></li>
                 <li><a href="demo/">Demo Page</a></li>
             </ul>
         </section>
 
         <section>
-            <h2>Usage</h2>
-            <p>Include <a href="http://jquery.com">jQuery</a> and the <code>analytics.js</code> file on your page. Don't forget to include the <a href="https://support.google.com/analytics/bin/answer.py?hl=en&answer=1008080">default tracking code</a> from Google. If you want to see if your events are tracking correctly  replace all references to <code>/ga.js</code> with <code>/u/ga_debug.js</code>. You'll now see a bunch of analytics output in your browser's console.</p>
-            <p>Here's an example of how the scripts should be loaded on your page</p>
-            <pre class="prettyprint">&lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="/path/to/analytics.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript"&gt;
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-XXXXX-Y']);
-    _gaq.push(['_trackPageview']);
+            <h2 id="setup">Setup</h2>
+<p>There are two ways to setup GA on your page. There is the traditional way which uses the javascript provided by Google or you can use GA's built-in <code>loadProviders()</code> method.</p>
+<h3 id="traditional">Traditional</h3>
+<p>Include <a href="http://jquery.com">jQuery</a> and the <em>analytics.js</em> file on your page. Don't forget to include the <a href="https://support.google.com/analytics/bin/answer.py?hl=en&amp;answer=1008080">default tracking code</a> from Google. If you want to see if your events are tracking correctly replace all references to /ga.js with /u/ga_debug.js. You'll now see a bunch of analytics output in your browser's console.</p>
+<p>Once those files and code are added to the page you need to call the <code>init()</code> method. The method takes two arguments. The first argument is an object of the custom click events you want to track. The second argument is the options you want to set. You can find a list of <a href="#options">available options</a> below.</p>
+<h4 id="code-sample">Code Sample</h4>
+<pre class="prettyprint js">&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/path/to/analytics.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        var _gaq = _gaq || [];
+        _gaq.push([&#39;_setAccount&#39;, &#39;UA-XXXXX-Y&#39;]);
+        _gaq.push([&#39;_trackPageview&#39;]);
 
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+        (function() {
+            var ga = document.createElement(&#39;script&#39;); ga.type = &#39;text/javascript&#39;; ga.async = true;
+            ga.src = (&#39;https:&#39; == document.location.protocol ? &#39;https://ssl&#39; : &#39;http://www&#39;) + &#39;.google-analytics.com/ga.js&#39;;
+            var s = document.getElementsByTagName(&#39;script&#39;)[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+        GA.init({
+            &#39;requestInfo&#39;: [&#39;_trackEvent&#39;, &#39;Request More Information&#39;, &#39;link&#39;],
+            &#39;siteSearch&#39;: [&#39;_trackEvent&#39;, &#39;Quick Search&#39;, &#39;main search&#39;],
+            &#39;printPage&#39;: [&#39;_trackEvent&#39;, &#39;Print&#39;, &#39;current page&#39;],
+            &#39;social&#39;: [[&#39;_trackSocial&#39;], [&#39;_trackEvent&#39;,  &#39;Social share&#39;]]
+        }, {
+            domain: &#39;example.com&#39;,
+            timer: 500
+        });
+    &lt;/script&gt;</pre>
+<h3 id="usine-the-load-method">Using the load() method</h3>
+<p>The simpler method is to use the <code>loadProviders()</code> method. This will load the Google analytics file for you and set everything up. You pass an object to the method with the options you want to set for Google Analytics.</p>
+<pre class="prettyprint js">GA.loadProviders({
+&#39;Google&#39;: {
+        &#39;trackingId&#39;: &#39;UA-XXXXXX-X&#39;,
+        &#39;domain&#39;: &#39;marinemax&#39;,
+        &#39;enhancedLink&#39;: true
+    }
+});</pre>
+<p>If the only setting you need to set is the tracking ID you can just pass that as a string.</p>
+<pre class="prettyprint js">GA.loadProviders({
+    &#39;Google&#39;: &#39;UA-XXXXXX-X&#39;
+});</pre>
+<h4 id="code-sample-1">Code Sample</h4>
+<pre class="prettyprint js">&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;/path/to/analytics.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+    /*
+        you can also call the loadProviders() method with just the GA tracking ID
+        GA.loadProviders({
+            &#39;Google&#39;: &#39;UA-XXXXXX-X&#39;
+        })
+     */
+    GA.loadProviders({
+        &#39;Google&#39;: {
+            &#39;trackingId&#39;: &#39;UA-XXXXXX-X&#39;,
+            &#39;domain&#39;: &#39;marinemax&#39;,
+            &#39;enhancedLink&#39;: true
+        }
+    });
+    GA.init({
+        &#39;requestInfo&#39;: [&#39;_trackEvent&#39;, &#39;Request More Information&#39;, &#39;link&#39;],
+        &#39;siteSearch&#39;: [&#39;_trackEvent&#39;, &#39;Quick Search&#39;, &#39;main search&#39;],
+        &#39;printPage&#39;: [&#39;_trackEvent&#39;, &#39;Print&#39;, &#39;current page&#39;],
+        &#39;social&#39;: [[&#39;_trackSocial&#39;], [&#39;_trackEvent&#39;,  &#39;Social share&#39;]]
+    }, {
+        domain: &#39;example.com&#39;,
+        timer: 500
+    });
 &lt;/script&gt;</pre>
+        </section>
 
-            <h3 id="outboundLinks">Outbound Links</h3>
-            <p>All outbound links are tracked automatically. If you wish to disable tracking of outbound links, make the <code>trackOutbound</code> option "false".</p>
+        <section>
+            <h2>Usage</h2>
 
-            <h3 id="customTracking">Setup Custom Tracking</h3>
+            <h3 id="customTracking">Setup Custom Link Tracking</h3>
             <p>For each custom tracking event you need to add a new property into the <code>gaEvents</code> object. Then you need to add two data attributes to your element, <code>data-analytics-type</code> and <code>data-analytics-info</code>. The attribute <code>data-analytics-type</code> refers to the property you added to <code>gaEvents</code>.</p>
             <h4>Example</h4>
             <p>Here is an example of tracking a link to request more information. The analytics people would like this information sent whenever a link to request more information is clicked <code>['_trackEvent', 'Request More Information', 'link', product name]</code> (where product name is a string representing the name of the product)</p>
@@ -84,6 +151,9 @@
             <p>So <code>data-analytics-type</code> holds the value of the key in the object we sent to the Analytics Class constructor and <code>data-analytics-info</code> holds the additional information we left off. The product name was originally left off because it is a variable that will be different with every link so a way was needed to pass that variable information to the javascript. Since you are probably using some kind of back-end to render your templates, we pass that responsibility to the back-end since it probably is already writing that information to the page in other places.</p>
 
             <p>Now the <code>data-analytics-info</code> won't always be needed. For example a &#8220;Print Page&#8220; link would just need this information: <code>['_trackEvent', 'Print', 'current page']</code>. If that is the case you can just leave the <code>data-analytics-info</code> attribute off the link.</p>
+
+            <h3 id="outboundLinks">Outbound Links</h3>
+            <p>All outbound links are tracked automatically. If you wish to disable tracking of outbound links, make the <code>trackOutbound</code> option "false".</p>
 
             <h3 id="trackingForms">Tracking Forms</h3>
             <p>Tracking a form is just a matter of adding some attributes to your form tags and any form controls you want to track. Just like with links you need to add a <code>data-analytics-type</code> attribute to the form that has a value that matches a key in your <code>gaEvents</code> object.</p>
@@ -110,14 +180,28 @@
         </section>
 
         <section>
+            <h2 id="options">Options</h2>
+            <p>Here's a list of available options you can set when initializing the GA class.</p>
+            <ul>
+                <li><strong>domain</strong>: The domain that the site lives at. This domain will be considered an internal link so that other links can be tracked as outbound. For example
+                                    if the domain is set to "example", www.example.com and example.com would be tracked as an internal link while www.google.com and www.facebook.com would be tracked as outbound.</li>
+                <li><strong>trackOutbound</strong>: {Boolean} [true] if you set this to false than outbound links won't be tracked as an outbound link.</li>
+                <li><strong>timer</strong>: [200] the time, in milliseconds, click events are paused for outbound links before the browser is forwarded along to the new URL. This allows Google
+                                    anlytics time to setup.</li>
+                <li><strong>siteSearchSelector</strong>: a CSS selector of the main search form for the site.</li>
+                <li><strong>siteSearchInput</strong>: a CSS selector of the input field the user types into when searching a site.</li>
+            </ul>
+        </section>
+
+        <section>
             <h2>Copyright and License</h2>
             <!-- <p>Copyright (c) 2013 Michael Turnwall</p> -->
+            <p>GA - Analytics Class is relased under a [GPL3 license](LICENSE).</p>
+            <pre>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-            <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-            <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
-
-            <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/gpl-3.0.html">&lt;http://www.gnu.org/licenses/gpl-3.0.html&gt;</a>.</p>
+You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/gpl-3.0.html">&lt;http://www.gnu.org/licenses/gpl-3.0.html&gt;</a>.</pre>
         </section>
         <footer>
             <p>This project is maintained by <a href="https://github.com/mturnwall">Michael Turnwall</a></p>

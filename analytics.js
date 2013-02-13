@@ -2,6 +2,13 @@
 /*global _gaq: true, $: true*/
 
 /**
+ *  A javascript class that makes it real easy to add custom google analytics tracking to any web site.
+ *  The goal of this class is to reduce the amount of custom javascript that needs to be written for custom google analytic tracking.
+ *
+ *  @author Michael Turnwall
+ *
+ *	@class  GA
+ *
  *  @license Copyright (c) 2013 Michael Turnwall
  *  Released under the GPL v3 License
  *  <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
@@ -12,8 +19,9 @@ var GA = (function() {
 	var defaults = {
 			domain: '',
 			trackOutbound: true,
-			siteSearchSelector: '#searchForm',
-			siteSearchInput: 'q'
+			siteSearchSelector: '',
+			siteSearchInput: '',
+			timer: 200
 		},
 		/**
 		 *	Add your custom tracking properties here or
@@ -28,13 +36,64 @@ var GA = (function() {
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
 		};
 	return {
-		'version': '0.3.3',
+		'version': '0.4.2',	// added load feature
+		/**
+		 *  false means the analytics code is not ready (loaded)
+		 *  @type {Boolean}
+		 */
+		ready: false,
+		/**
+		 *  this will hold a list of all the available providers with their associated setup() and tracking methods
+		 *  @type {Object}
+		 *  @example
+		 *  // here's an example on how to create a new provider
+		 *  availableProviders['Google'] = {
+		 *    defaults: {
+		 *      domain: ''
+		 *    },
+		 *    setup: function () {
+		 *      // load ga.js
+		 *    };
+		 *  }
+		 */
+		availableProviders: {},
+		
+		/**
+		 *  remove whitespace from the beginning and end of a string
+		 *  @param   {String} value a string to remove whitespace from
+		 *  @returns {String} the same string with whitespace removed
+		 */
+		cleanValue: function (value) {
+			value = value.replace(/^(\s)*/, '');
+			value = value.replace(/(\s)*$/, '');
+			return value;
+		},
+		/**
+		 *  Loop through the availableProviders matching the ones passed in by the user
+		 *  If a match is found call the initalize function for that provided to set necessary
+		 *  options and load the provider's scripts.
+		 *  Right now only Google Analytics is supported
+		 *  @param {Object} providers list of providers to enable as well as any options to set for the provider
+		 */
+		loadProviders: function (providers) {
+			var key, provider, options;
+			for (key in providers) {
+				try	{
+					provider = this.availableProviders[key];
+					provider.setup(providers[key]);
+				} catch(e) {
+					throw new Error('Sorry, no provider with the name of "' + key + '" is available');
+				}
+			}
+			// we are ready to do some tracking
+			this.ready = true;
+		},
 		/**
 		 *  extend an object by merging with other objects
 		 *  if only one object is passed in then it extends the GA class
 		 *  @return {Object} the merged objects
 		 */
-		mergeObj: function () {
+		extend: function () {
 			var target = arguments[0] || {},
 				i = 1,
 				length = arguments.length,
@@ -59,7 +118,8 @@ var GA = (function() {
 			if (gaOptions) {
 				if (typeof gaOptions !== 'string') {
 					for (i=0, z=gaOptions.length; i<z; i++) {
-						params.push(gaOptions[i] || '');
+						// remove any whitespace at the beginning of the string
+						params.push(this.cleanValue(gaOptions[i]) || '');
 					}
 				} else {
 					params.push(gaOptions);
@@ -88,7 +148,7 @@ var GA = (function() {
 		},
 		/**
 		 *  push information to the tracking object
-		 *  @param   {Array} parameters an array of the parameters, ex. ['_trackEvent', 'Payment Calculator', 'submit']
+		 *  @param   {Array} parameters an array of the parameters, ex. [['_trackEvent', 'Payment Calculator', 'submit']]
 		 */
 		pushTrackEvent: function (parameters) {
 			var key;
@@ -108,12 +168,18 @@ var GA = (function() {
 			]);
 			setTimeout(function() {
 				location.href = link;
-			}, 200);
+			}, this.opts.timer);
 		},
 		trackSiteSearch: function (form) {
 			this.pushTrackEvent(this.factory('siteSearch', form[this.opts.siteSearchInput].value));
 			return true;
 		},
+		/**
+		 *  Setup tracking for forms. Any form control that has data-analytics-track-value="true"
+		 *  on the tag will have it's value pushed to _gaq. Values are separated by a colon.
+		 *  @param   {DOM Node} form the form that is going to be tracked
+		 *  @returns {Boolean} true so that the form will still submit as normal
+		 */
 		trackForms: function (form) {
 			var analyticsType = form.getAttribute('data-analytics-type') || false,
 				analyticsInfo = '',
@@ -133,16 +199,23 @@ var GA = (function() {
 			}
 			return true;
 		},
+		/**
+		 *  Determines if a link is an outbound link or not. This method will pull the values from
+		 *  data-analytics-type and data-analytics-info to contruct the Array that will get pushed to _gaq
+		 *  @param   {DOM Node} el the link that had it's click event triggered
+		 *  @returns {Boolean} if internal link return true so that the link is followed. Outbound links
+		 *                        returns false to allow time for the _gaq.push() method to fire
+		 */
 		trackLinks: function (el) {
 			var analyticsInfo,
-				analyticsType = el.getAttribute('data-analytics-type') || false,
-				regexp = new RegExp('^http(s)?:\/\/([a-z]+\.)?(' + this.opts.domain + ')', 'ig'),
+				regexp = new RegExp('^http(s)?://([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
 				parameters = false;
-			if (analyticsType) {
+			this.analyticsType = el.getAttribute('data-analytics-type') || false;
+			if (this.analyticsType) {
 				parameters = [];
-				analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
-				parameters = (this.factory(analyticsType, analyticsInfo));
-			} else if (!el.href.match(regexp)) {	// track outbound links
+				this.analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
+				parameters = (this.factory(this.analyticsType, this.analyticsInfo));
+			} else if (!regexp.test(el.href)) {	// track outbound links
 				this.outboundLinks(el);
 				return false;
 			}
@@ -151,10 +224,15 @@ var GA = (function() {
 				return true;
 			}
 		},
+		/**
+		 *  Setups the object's options and bind events to elements that need to be tracked
+		 *  @param   {Object} userEvents key:value pairs of the custom events that need to be tracked
+		 *  @param   {Object} options user defined options that override the default options
+		 */
 		init: function (userEvents, options) {
 			var that = this;
-			this.gaEvents = this.mergeObj(gaEvents, userEvents);
-			this.opts = this.mergeObj(defaults, options);
+			this.gaEvents = this.extend(gaEvents, userEvents);
+			this.opts = this.extend(defaults, options);
 			/*
 				setup tracking for all links
 				the default behavior is to prevent the link's default behavior
@@ -167,13 +245,68 @@ var GA = (function() {
 			/*
 				track all forms on the page
 			 */
-			$('form').on('submit', function() {
-				that.trackForms(this);
-				return false; // for testing change this to false so the form doesn't actually submit
-			});
-			$(this.opts.siteSearchSelector).submit(function () {
-				return that.trackSiteSearch(this);
-			});
+			if ($('form').not(this.opts.siteSearchSelector).length) {
+				$('form').not(this.opts.siteSearchSelector).on('submit', function() {
+					that.trackForms(this);
+					return false; // for testing change this to false so the form doesn't actually submit
+				});
+			}
+			if ($(this.opts.siteSearchSelector.length)) {
+				$(this.opts.siteSearchSelector).submit(function () {
+					return that.trackSiteSearch(this);
+				});
+			}
 		}
 	};
 })();
+
+/**
+ *	Object for setting up Google Analytics
+ *	@example
+ *  GA.loadProviders({
+ *    'Google': {
+ *      'trackingId': 'UA-XXXXXX-X',
+ *      'domain': 'marinemax',
+ *      'debug': true
+ *    }
+ *  });
+ *  
+ *  // You can also just simply pass the tracking ID
+ *  GA.loadProviders({
+ *    'Google': 'UA-XXXXXX-X'
+ *  })
+ *
+ */
+GA.availableProviders['Google'] = {
+	defaults: {
+		domain: '',
+		debug: false,
+		enhancedLink: false,
+		trackingId: ''
+	},
+	setup: function (opts) {
+		var googleScript,
+			option,
+			_gaq = window._gaq = window._gaq || []; // _gaq is attached to window so scope is beyond this function
+		options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
+		scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
+		if (options.enhancedLink) {
+			_gaq.push(['_require', 'inpage_linkid', '//www.google-analytics.com/plugins/ga/inpage_linkid.js']);
+		}
+		if (options.trackingId) {
+			_gaq.push(['_setAccount', options.trackingId]);
+		} else {
+			throw new Error('You need to provide a tracking ID for Google Analytics');
+		}
+		if (options.domain) {
+			_gaq.push(['_setDomainName', options.domain]);
+		}
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga, s;
+			ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/' + scriptName;
+			s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	}
+};

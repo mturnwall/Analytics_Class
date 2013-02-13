@@ -182,7 +182,7 @@ header ul a:hover {
   text-decoration: none;
 }
 strong {
-  color:#222;
+  color:#393939;
   font-weight:700;
 }
 
@@ -208,6 +208,10 @@ section {
   float:right;
   padding-top: 5px;
   padding-bottom:30px;
+}
+
+section li {
+  padding-bottom: 6px;
 }
 
 small {
