@@ -34,45 +34,29 @@ var GA = (function() {
 			'siteSearch': ['_trackEvent', 'Quick Search', 'main search'],
 			'printPage': ['_trackEvent', 'Print', 'current page'],
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
-		},
-		availableProviders = {
-			'Google': {
-				defaults: {
-					domain: '',
-					debug: false,
-					enhancedLink: false,
-					trackingId: ''
-				},
-				init: function (opts) {
-					var googleScript,
-						option,
-						_gaq = window._gaq = window._gaq || []; // _gaq is attached to window so scope is beyond this function
-					options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
-					scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
-					if (options.enhancedLink) {
-						_gaq.push(['_require', 'inpage_linkid', '//www.google-analytics.com/plugins/ga/inpage_linkid.js']);
-					}
-					if (options.trackingId) {
-						_gaq.push(['_setAccount', options.trackingId]);
-					} else {
-						throw new Error('You need to provide a tracking ID for Google Analytics');
-					}
-					if (options.domain) {
-						_gaq.push(['_setDomainName', options.domain]);
-					}
-					_gaq.push(['_trackPageview']);
-					(function() {
-						var ga, s;
-						ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-						ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/' + scriptName;
-						s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-					})();
-				}
-			}
 		};
 	return {
 		'version': '0.4.2',	// added load feature
-		'ready': false,		// false means the analytics code is not ready (loaded)
+		/**
+		 *  false means the analytics code is not ready (loaded)
+		 *  @type {Boolean}
+		 */
+		ready: false,
+		/**
+		 *  this will hold a list of all the available providers with their associated setup() and tracking methods
+		 *  @type {Object}
+		 *  @example
+		 *  // here's an example on how to create a new provider
+		 *  availableProviders['Google'] = {
+		 *    defaults: {
+		 *      domain: ''
+		 *    },
+		 *    setup: function () {
+		 *      // load ga.js
+		 *    };
+		 *  }
+		 */
+		availableProviders: {},
 		
 		/**
 		 *  remove whitespace from the beginning and end of a string
@@ -95,13 +79,13 @@ var GA = (function() {
 			var key, provider, options;
 			for (key in providers) {
 				try	{
-					provider = availableProviders[key];
-					provider.init(providers[key]);
+					provider = this.availableProviders[key];
+					provider.setup(providers[key]);
 				} catch(e) {
 					throw new Error('Sorry, no provider with the name of "' + key + '" is available');
 				}
 			}
-			/** we are ready to do some tracking */
+			// we are ready to do some tracking
 			this.ready = true;
 		},
 		/**
@@ -275,3 +259,54 @@ var GA = (function() {
 		}
 	};
 })();
+
+/**
+ *	Object for setting up Google Analytics
+ *	@example
+ *  GA.loadProviders({
+ *    'Google': {
+ *      'trackingId': 'UA-XXXXXX-X',
+ *      'domain': 'marinemax',
+ *      'debug': true
+ *    }
+ *  });
+ *  
+ *  // You can also just simply pass the tracking ID
+ *  GA.loadProviders({
+ *    'Google': 'UA-XXXXXX-X'
+ *  })
+ *
+ */
+GA.availableProviders['Google'] = {
+	defaults: {
+		domain: '',
+		debug: false,
+		enhancedLink: false,
+		trackingId: ''
+	},
+	setup: function (opts) {
+		var googleScript,
+			option,
+			_gaq = window._gaq = window._gaq || []; // _gaq is attached to window so scope is beyond this function
+		options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
+		scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
+		if (options.enhancedLink) {
+			_gaq.push(['_require', 'inpage_linkid', '//www.google-analytics.com/plugins/ga/inpage_linkid.js']);
+		}
+		if (options.trackingId) {
+			_gaq.push(['_setAccount', options.trackingId]);
+		} else {
+			throw new Error('You need to provide a tracking ID for Google Analytics');
+		}
+		if (options.domain) {
+			_gaq.push(['_setDomainName', options.domain]);
+		}
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga, s;
+			ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/' + scriptName;
+			s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	}
+};
