@@ -54,7 +54,7 @@ The simpler method is to use the `loadProviders()` method. This will load the Go
 	GA.loadProviders({
 		'Google': {
 			'trackingId': 'UA-XXXXXX-X',
-			'domain': 'marinemax',
+			'domain': 'example',
 			'enhancedLink': true
 		}
 	});
@@ -83,7 +83,7 @@ If the only setting you need to set is the tracking ID you can just pass that as
 		GA.loadProviders({
 			'Google': {
 				'trackingId': 'UA-XXXXXX-X',
-				'domain': 'marinemax',
+				'domain': 'example',
 				'enhancedLink': true
 			}
 		});
