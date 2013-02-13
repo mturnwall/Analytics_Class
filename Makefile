@@ -1,6 +1,8 @@
-SRC = src/analytics.js
+SRC = src/analytics.js \
+		src/providers/google.js
 
 MOCHA = mocha-phantomjs
+PHANTOM = phantomjs
 
 all: lint test docs build min
 
@@ -10,13 +12,16 @@ lint:
 test:
 	$(MOCHA) test/index.html
 
-docs:
-	~/src/jsdoc/jsdoc $(SRC) -d docs
-
 build: $(SRC)
 	cat $^ > analytics.js
 
-min: build
-	uglifyjs -c --comments -o analytics.min.js analytics.js
+docs: build
+	~/src/jsdoc/jsdoc analytics.js -d docs
 
-.PHONY: test
+min: build
+	uglifyjs -c --comments --mangle -o analytics.min.js analytics.js
+
+integration: 
+	$(PHANTOM) test/integration_testing/phantom_runner.js
+
+.PHONY: docs test integration

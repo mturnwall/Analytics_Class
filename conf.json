@@ -1,12 +1,12 @@
 {
-  // "plugins": [
-  //   "plugins/markdown"
-  // ],
+  "plugins": [
+    "plugins/markdown"
+  ],
   "markdown": {
     "parser": "gfm"
   },
   "source": {
-    "include": ["src", "README.md"]
+    "include": ["analytics.js", "README.md"]
   },
   "opts": {
     "destination": "./docs",

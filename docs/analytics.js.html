@@ -46,8 +46,8 @@ var GA = (function() {
 	var defaults = {
 			domain: '',
 			trackOutbound: true,
-			siteSearchSelector: '#searchForm',
-			siteSearchInput: 'q',
+			siteSearchSelector: '',
+			siteSearchInput: '',
 			timer: 200
 		},
 		/**
@@ -61,45 +61,29 @@ var GA = (function() {
 			'siteSearch': ['_trackEvent', 'Quick Search', 'main search'],
 			'printPage': ['_trackEvent', 'Print', 'current page'],
 			'social': [['_trackSocial'], ['_trackEvent',  'Social share']]
-		},
-		availableProviders = {
-			'Google': {
-				defaults: {
-					domain: '',
-					debug: false,
-					enhancedLink: false,
-					trackingId: ''
-				},
-				init: function (opts) {
-					var googleScript,
-						option,
-						_gaq = window._gaq = window._gaq || []; // _gaq is attached to window so scope is beyond this function
-					options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
-					scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
-					if (options.enhancedLink) {
-						_gaq.push(['_require', 'inpage_linkid', '//www.google-analytics.com/plugins/ga/inpage_linkid.js']);
-					}
-					if (options.trackingId) {
-						_gaq.push(['_setAccount', options.trackingId]);
-					} else {
-						throw new Error('You need to provide a tracking ID for Google Analytics');
-					}
-					if (options.domain) {
-						_gaq.push(['_setDomainName', options.domain]);
-					}
-					_gaq.push(['_trackPageview']);
-					(function() {
-						var ga, s;
-						ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-						ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/' + scriptName;
-						s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-					})();
-				}
-			}
 		};
 	return {
-		'version': '0.4.1',	// added load feature
-		'ready': false,		// false means the analytics code is not ready (loaded)
+		'version': '0.4.2',	// added load feature
+		/**
+		 *  false means the analytics code is not ready (loaded)
+		 *  @type {Boolean}
+		 */
+		ready: false,
+		/**
+		 *  this will hold a list of all the available providers with their associated setup() and tracking methods
+		 *  @type {Object}
+		 *  @example
+		 *  // here's an example on how to create a new provider
+		 *  availableProviders['Google'] = {
+		 *    defaults: {
+		 *      domain: ''
+		 *    },
+		 *    setup: function () {
+		 *      // load ga.js
+		 *    };
+		 *  }
+		 */
+		availableProviders: {},
 		
 		/**
 		 *  remove whitespace from the beginning and end of a string
@@ -122,19 +106,13 @@ var GA = (function() {
 			var key, provider, options;
 			for (key in providers) {
 				try	{
-					provider = availableProviders[key];
-					provider.init(providers[key]);
+					provider = this.availableProviders[key];
+					provider.setup(providers[key]);
 				} catch(e) {
 					throw new Error('Sorry, no provider with the name of "' + key + '" is available');
 				}
-				
-				// if (provider) {
-					
-				// } else {
-					
-				// }
 			}
-			/** we are ready to do some tracking */
+			// we are ready to do some tracking
 			this.ready = true;
 		},
 		/**
@@ -257,14 +235,14 @@ var GA = (function() {
 		 */
 		trackLinks: function (el) {
 			var analyticsInfo,
-				regexp = new RegExp('^http(s)?:\/\/([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
+				regexp = new RegExp('^http(s)?://([a-z]+\\.)?(' + this.opts.domain + ')', 'ig'),
 				parameters = false;
 			this.analyticsType = el.getAttribute('data-analytics-type') || false;
 			if (this.analyticsType) {
 				parameters = [];
 				this.analyticsInfo = (el.getAttribute('data-analytics-info')) ? el.getAttribute('data-analytics-info').split(',') : '';
 				parameters = (this.factory(this.analyticsType, this.analyticsInfo));
-			} else if (!el.href.match(regexp)) {	// track outbound links
+			} else if (!regexp.test(el.href)) {	// track outbound links
 				this.outboundLinks(el);
 				return false;
 			}
@@ -294,16 +272,71 @@ var GA = (function() {
 			/*
 				track all forms on the page
 			 */
-			$('form').on('submit', function() {
-				that.trackForms(this);
-				return false; // for testing change this to false so the form doesn't actually submit
-			});
-			$(this.opts.siteSearchSelector).submit(function () {
-				return that.trackSiteSearch(this);
-			});
+			if ($('form').not(this.opts.siteSearchSelector).length) {
+				$('form').not(this.opts.siteSearchSelector).on('submit', function() {
+					that.trackForms(this);
+					return false; // for testing change this to false so the form doesn't actually submit
+				});
+			}
+			if ($(this.opts.siteSearchSelector.length)) {
+				$(this.opts.siteSearchSelector).submit(function () {
+					return that.trackSiteSearch(this);
+				});
+			}
 		}
 	};
-})();</code></pre>
+})();
+
+/**
+ *	Object for setting up Google Analytics
+ *	@example
+ *  GA.loadProviders({
+ *    'Google': {
+ *      'trackingId': 'UA-XXXXXX-X',
+ *      'domain': 'marinemax',
+ *      'debug': true
+ *    }
+ *  });
+ *  
+ *  // You can also just simply pass the tracking ID
+ *  GA.loadProviders({
+ *    'Google': 'UA-XXXXXX-X'
+ *  })
+ *
+ */
+GA.availableProviders['Google'] = {
+	defaults: {
+		domain: '',
+		debug: false,
+		enhancedLink: false,
+		trackingId: ''
+	},
+	setup: function (opts) {
+		var googleScript,
+			option,
+			_gaq = window._gaq = window._gaq || []; // _gaq is attached to window so scope is beyond this function
+		options = (typeof opts !== 'string') ? GA.extend({}, this.defaults, opts) : GA.extend({}, this.defaults, { trackingId: opts});
+		scriptName = (!options.debug) ? 'ga.js' : 'u/ga_debug.js';
+		if (options.enhancedLink) {
+			_gaq.push(['_require', 'inpage_linkid', '//www.google-analytics.com/plugins/ga/inpage_linkid.js']);
+		}
+		if (options.trackingId) {
+			_gaq.push(['_setAccount', options.trackingId]);
+		} else {
+			throw new Error('You need to provide a tracking ID for Google Analytics');
+		}
+		if (options.domain) {
+			_gaq.push(['_setDomainName', options.domain]);
+		}
+		_gaq.push(['_trackPageview']);
+		(function() {
+			var ga, s;
+			ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/' + scriptName;
+			s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	}
+};</code></pre>
         </article>
     </section>
 
@@ -313,13 +346,13 @@ var GA = (function() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="GA.html">GA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#cleanValue">cleanValue</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadProviders">loadProviders</a></li><li><a href="global.html#outboundLinks">outboundLinks</a></li><li><a href="global.html#pushTrackEvent">pushTrackEvent</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#trackForms">trackForms</a></li><li><a href="global.html#trackLinks">trackLinks</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="GA.html">GA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#availableProviders">availableProviders</a></li><li><a href="global.html#cleanValue">cleanValue</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadProviders">loadProviders</a></li><li><a href="global.html#outboundLinks">outboundLinks</a></li><li><a href="global.html#pushTrackEvent">pushTrackEvent</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#trackForms">trackForms</a></li><li><a href="global.html#trackLinks">trackLinks</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Feb 11 2013 01:16:51 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue Feb 12 2013 16:41:52 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
