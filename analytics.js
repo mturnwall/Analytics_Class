@@ -266,7 +266,7 @@ var GA = (function() {
  *  GA.loadProviders({
  *    'Google': {
  *      'trackingId': 'UA-XXXXXX-X',
- *      'domain': 'marinemax',
+ *      'domain': 'example',
  *      'debug': true
  *    }
  *  });
